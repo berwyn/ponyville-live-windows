@@ -38,6 +38,18 @@
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
+        
+        <!-- Media playback host -->
+        <MediaElement 
+            x:Name="MediaPlayer"
+            AreTransportControlsEnabled="True"
+            AutoPlay="False"
+            AudioCategory="BackgroundCapableMedia"
+            MediaOpened="MediaPlayer_MediaOpened"
+            MediaFailed="MediaPlayer_OnMediaFailed"
+            CurrentStateChanged="MediaPlayer_OnCurrentStateChanged"/>
+        
+        <!-- Hub content -->
         <Hub SectionHeaderClick="Hub_SectionHeaderClick">
             <Hub.Header>
                 <!-- Back button and page title -->
@@ -53,7 +65,7 @@
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
-                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="application name" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Ponyville Live!" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" />
                 </Grid>
             </Hub.Header>
@@ -101,8 +113,37 @@
                     </Grid>
                 </DataTemplate>
             </HubSection>
-            <HubSection IsHeaderInteractive="True" DataContext="{Binding AudioStations}" d:DataContext="{Binding Groups[3], Source={d:DesignData Source=../PVL.Shared/DataModel/SampleData.json, Type=data:SampleDataSource}}"
-                        x:Uid="Section3Header" Header="Section 3" Padding="40,40,40,32">
+            
+            <!-- Audio stations -->
+            <HubSection IsHeaderInteractive="False" 
+                        DataContext="{Binding AudioStations}" 
+                        d:DataContext="{Binding Groups[3], Source={d:DesignData Source=../PVL.Shared/DataModel/SampleData.json, Type=data:SampleDataSource}}"
+                        x:Uid="RadioHeader" 
+                        Header="Radio"
+                        Padding="40,40,40,32">
+                <DataTemplate>
+                    <GridView
+                        x:Name="itemGridView"
+                        ItemsSource="{Binding Stations}"
+                        Margin="-9,-14,0,0"
+                        AutomationProperties.AutomationId="ItemGridView"
+                        AutomationProperties.Name="Items In Group"
+                        ItemTemplate="{StaticResource Standard310x260ItemTemplate}"
+                        SelectionMode="None"
+                        IsSwipeEnabled="false"
+                        IsItemClickEnabled="True"
+                        ItemClick="ItemView_ItemClick">
+                    </GridView>
+                </DataTemplate>
+            </HubSection>
+            
+            <!-- Video stations -->
+            <HubSection IsHeaderInteractive="False" 
+                        DataContext="{Binding VideoStations}" 
+                        d:DataContext="{Binding Groups[3], Source={d:DesignData Source=../PVL.Shared/DataModel/SampleData.json, Type=data:SampleDataSource}}"
+                        x:Uid="VideoHeader" 
+                        Header="Video"
+                        Padding="40,40,40,32">
                 <DataTemplate>
                     <GridView
                         x:Name="itemGridView"

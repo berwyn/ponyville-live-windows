@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,6 +31,7 @@ namespace PVL
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        private SystemMediaTransportControls systemControls;
 
         /// <summary>
         /// Gets the NavigationHelper used to aid in navigation and process lifetime management.
@@ -50,6 +54,12 @@ namespace PVL
             this.InitializeComponent();
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
+
+            systemControls = SystemMediaTransportControls.GetForCurrentView();
+            systemControls.ButtonPressed += SystemControls_ButtonPressed;
+
+            systemControls.IsPlayEnabled = true;
+            systemControls.IsPauseEnabled = true;
         }
 
         /// <summary>
@@ -65,7 +75,9 @@ namespace PVL
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+
             LoadAudioStations();
+            LoadVideoStations();
         }
 
         /// <summary>
@@ -88,10 +100,16 @@ namespace PVL
         /// <param name="e">Event data that describes the item clicked.</param>
         void ItemView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            // Navigate to the appropriate destination page, configuring the new page
-            // by passing required information as a navigation parameter
-            var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
-            this.Frame.Navigate(typeof(ItemPage), itemId);
+            try
+            {
+                var streamUrl = ((Station) e.ClickedItem).StreamURL;
+                MediaPlayer.Source = new Uri(streamUrl);
+
+            }
+            catch (Exception ex)
+            {
+                // TODO: Do something here to show error state
+            }
         }
         #region NavigationHelper registration
 
@@ -130,6 +148,76 @@ namespace PVL
                 Stations = new ObservableCollection<Station>(stations)
             };
             this.DefaultViewModel["AudioStations"] = collection;
+        }
+
+        private async void LoadVideoStations()
+        {
+            var stations = await API.Instance.StationFetchTask("video");
+            var collection = new StationGroup
+            {
+                Title = "Video",
+                Stations = new ObservableCollection<Station>(stations)
+            };
+            this.DefaultViewModel["VideoStations"] = collection;
+        }
+
+        #endregion
+
+        #region Media Player events
+
+        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs args)
+        {
+            StartPlayer();
+        }
+
+        private void MediaPlayer_OnMediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MediaPlayer_OnCurrentStateChanged(object sender, RoutedEventArgs e)
+        {
+            switch (MediaPlayer.CurrentState)
+            {
+                case MediaElementState.Playing:
+                    systemControls.PlaybackStatus = MediaPlaybackStatus.Playing;
+                    break;
+                case MediaElementState.Paused:
+                    systemControls.PlaybackStatus = MediaPlaybackStatus.Paused;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Transport controls
+
+        void SystemControls_ButtonPressed(SystemMediaTransportControls sender,
+            SystemMediaTransportControlsButtonPressedEventArgs args)
+        {
+            switch (args.Button)
+            {
+                case SystemMediaTransportControlsButton.Play:
+                    StartPlayer();
+                    break;
+                case SystemMediaTransportControlsButton.Pause:
+                    PausePlayer();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        async void StartPlayer()
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => MediaPlayer.Play());
+        }
+
+        async void PausePlayer()
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => MediaPlayer.Pause());
         }
 
         #endregion

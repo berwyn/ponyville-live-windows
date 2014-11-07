@@ -20,10 +20,14 @@ namespace PVL
 
     public class Station
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("genre")]
         public string Genre { get; set; }
         [JsonProperty("image_url")]
         public string ImageURL { get; set; }
+        [JsonProperty("stream_url")]
+        public string StreamURL { get; set; }
     }
 
     public class API : RestClient
@@ -40,6 +44,7 @@ namespace PVL
         public API()
         {
             BaseUrl = API_BASE;
+            UserAgent = "pvl.cs/0.1.0";
         }
 
         public async Task<Station[]> StationFetchTask()
