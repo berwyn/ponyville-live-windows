@@ -15,7 +15,12 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="PVL.Windows.App">
-      <m2:VisualElements DisplayName="Ponyville Live!" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="PVL.Windows" ForegroundText="light" BackgroundColor="#464646" ToastCapable="true">
+      <m2:VisualElements DisplayName="Ponyville Live!" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="PVL.Windows" ForegroundText="light" BackgroundColor="#2C7FD2" ToastCapable="true">
+        <m2:DefaultTile ShortName="Ponyville Live!">
+          <m2:ShowNameOnTiles>
+            <m2:ShowOn Tile="square150x150Logo" />
+          </m2:ShowNameOnTiles>
+        </m2:DefaultTile>
         <m2:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#2C7FD2" />
         <m2:InitialRotationPreference>
           <m2:Rotation Preference="portrait" />
