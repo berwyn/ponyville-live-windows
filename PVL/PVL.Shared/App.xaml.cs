@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using PVL.Common;
+using Windows.UI.Popups;
 
 // The Universal Hub Application project template is documented at http://go.microsoft.com/fwlink/?LinkID=391955
 
@@ -49,6 +50,7 @@ namespace PVL
         protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
+            this.DebugSettings.BindingFailed += OnDebugSettingsOnBindingFailed;
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
@@ -116,6 +118,11 @@ namespace PVL
 
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private void OnDebugSettingsOnBindingFailed(object sender, BindingFailedEventArgs args)
+        {
+            new MessageDialog(args.Message).ShowAsync();
         }
 
 #if WINDOWS_PHONE_APP

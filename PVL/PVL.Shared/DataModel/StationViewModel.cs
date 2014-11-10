@@ -1,36 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PVL.DataModel
 {
-    class StationGroup : INotifyPropertyChanged
+    class StationViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string _title;
-        private ObservableCollection<StationViewModel> _stations;
+        private Station _station;
+        private NowPlayingInfo _nowPlaying;
 
-        public string Title 
+        public Station Station
         {
-            get { return _title; }
+            get { return _station; }
             set
             {
-                _title = value;
-                OnPropertyChanged<string>();
+                _station = value;
+                OnPropertyChanged<Station>();
             }
         }
-
-        public ObservableCollection<StationViewModel> Stations 
-        { 
-            get { return _stations; }
+        public NowPlayingInfo NowPlaying
+        {
+            get { return _nowPlaying; }
             set
             {
-                _stations = value;
-                OnPropertyChanged<ObservableCollection<StationViewModel>>();
+                _nowPlaying = value;
+                OnPropertyChanged<NowPlayingInfo>();
             }
         }
 

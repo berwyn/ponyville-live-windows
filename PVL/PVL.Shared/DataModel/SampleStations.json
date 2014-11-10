@@ -1,0 +1,57 @@
+﻿{
+    "Title": "Example",
+    "Stations": [
+        {
+            "NowPlaying": {
+                "CurrentSong": {
+                    "Title": "Foo",
+                    "Artist": "Bar"
+                }
+            },
+            "Station": {
+                "Name": "Foo Station",
+                "Genre": "bar baz",
+                "Shortcode": "foobar"
+            }
+        },
+        {
+            "NowPlaying": {
+                "CurrentSong": {
+                    "Title": "Foo",
+                    "Artist": "Bar"
+                }
+            },
+            "Station": {
+                "Name": "Bar Station",
+                "Genre": "baz foo",
+                "Shortcode": "barbaz"
+            }
+        },
+        {
+            "NowPlaying": {
+                "CurrentSong": {
+                    "Title": "Foo",
+                    "Artist": "Bar"
+                }
+            },
+            "Station": {
+                "Name": "Foo Station",
+                "Genre": "bar baz",
+                "Shortcode": "foobar"
+            }
+        },
+        {
+            "NowPlaying": {
+                "CurrentSong": {
+                    "Title": "Foo",
+                    "Artist":  "Bar"
+                }
+            },
+            "Station": {
+                "Name": "Bar Station",
+                "Genre": "baz foo",
+                "Shortcode": "barbaz"
+            }
+        }
+    ]
+}

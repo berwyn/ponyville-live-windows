@@ -6,13 +6,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PVL"
     xmlns:data="using:PVL.Data"
+    xmlns:datamodel="using:PVL.DataModel"
     xmlns:common="using:PVL.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <!-- Grid-appropriate 310 by 260 pixel item template as seen in section 4 -->
+        <!-- Grid-appropriate 310 by 260 pixel item template -->
         <DataTemplate x:Key="Standard310x260ItemTemplate">
             <Grid Height="250" Width="310" Margin="5,10,5,10">
                 <Grid.RowDefinitions>
@@ -20,11 +21,44 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" Height="150">
-                    <Image Source="{Binding ImageURL}" Stretch="Uniform" AutomationProperties.Name="{Binding Name}"/>
+                    <Image x:Name="StationIcon" 
+                           Source="{Binding Station.ImageURL}" 
+                           Stretch="Uniform" 
+                           AutomationProperties.Name="{Binding Station.Name}"/>
                 </Border>
                 <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                    <TextBlock Text="{Binding Name}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
-                    <TextBlock Text="{Binding Genre}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60" />
+                    <TextBlock x:Name="StationName" 
+                               Text="{Binding Station.Name}" 
+                               Style="{StaticResource TitleTextBlockStyle}" 
+                               TextWrapping="NoWrap"/>
+                    <TextBlock x:Name="StationGenre" 
+                               Text="{Binding Station.Genre}" 
+                               Style="{StaticResource BodyTextBlockStyle}" 
+                               MaxHeight="60" />
+                    <Grid Width="Auto"
+                          Height="Auto"
+                          Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock x:Name="MusicInfoSymbol" 
+                                   Text="&#xE142;"
+                                   FontFamily="Segoe UI Symbol"
+                                   Width="20"
+                                   Height="20"
+                                   Margin="10"
+                                   Grid.Column="0"/>
+                        
+                        <StackPanel Grid.Column="1">
+                            <TextBlock x:Name="StationCurrentSongTitle" 
+                                       Text="{Binding NowPlaying.CurrentSong.Title}" />
+                            <TextBlock x:Name="StationCurrentSongArtist" 
+                                       Text="{Binding NowPlaying.CurrentSong.Artist}" />
+                        </StackPanel>
+                        
+                    </Grid>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -54,16 +88,17 @@
             MediaFailed="MediaPlayer_OnMediaFailed"
             CurrentStateChanged="MediaPlayer_OnCurrentStateChanged"/>
         
+        <!-- Spinner while data is loading -->
         <ProgressRing 
-            Visibility="{Binding DataLoaded, Converter={StaticResource InvBoolToVis}}"
             x:Name="DataProgressRing"
-            IsActive="True" 
+            IsActive="{Binding DataLoaded}" 
             Width="200" 
             Height="200"
             Foreground="White"/>
         
         <!-- Hub content -->
-        <Hub SectionHeaderClick="Hub_SectionHeaderClick">
+        <Hub SectionHeaderClick="Hub_SectionHeaderClick"
+             Visibility="{Binding DataLoaded, Converter={StaticResource BoolToVis}}">
             <Hub.Header>
                 <!-- Back button and page title -->
                 <Grid>
@@ -83,13 +118,66 @@
                 </Grid>
             </Hub.Header>
             
+            <!-- Playback controls -->
+            <HubSection IsHeaderInteractive="False"
+                        x:Name="NowPlayingSection"
+                        x:Uid="NowPlayingHeader"
+                        Header="Now Playing"
+                        Padding="40,40,40,32">
+                <DataTemplate>
+                    <Grid
+                        x:Name="NowPlayingGridView">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="80" />
+                            <RowDefinition Height="160" />
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Station name and icon -->
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{Binding CurrentStation.ImageURL}" 
+                                   Grid.Column="0" />
+                            <TextBlock Text="{Binding CurrentStation.Name}"
+                                   Grid.Column="1" />
+                        </Grid>
+                        
+                        <!-- Now playing data -->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40" />
+                                <RowDefinition Height="40" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Text="&#xE142;"
+                                       FontFamily="Segoe UI Symbol"
+                                       Grid.Column="0"
+                                       Grid.Row="0"
+                                       Grid.RowSpan="2"/>
+                            <TextBlock Text="{Binding CurrentSong.Title}"
+                                       Grid.Column="1"
+                                       Grid.Row="0" />
+                            <TextBlock Text="{Binding CurrentSong.Artist}"
+                                       Grid.Column="1"
+                                       Grid.Row="1" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            
             <!-- Audio stations -->
-            <HubSection Visibility="{Binding DataLoaded, Converter={StaticResource BoolToVis}}"
-                        IsHeaderInteractive="False" 
+            <HubSection IsHeaderInteractive="False" 
                         DataContext="{Binding AudioStations}" 
-                        d:DataContext="{Binding Groups[3], Source={d:DesignData Source=../PVL.Shared/DataModel/SampleData.json, Type=data:SampleDataSource}}"
+                        d:DataContext="{d:DesignData Source=../PVL.Shared/DataModel/SampleStations.json, Type=datamodel:StationGroup}"
                         x:Uid="RadioHeader" 
-                        Header="Radio"
+                        Header="{Binding Title}"
                         Padding="40,40,40,32">
                 <DataTemplate>
                     <GridView
@@ -108,12 +196,11 @@
             </HubSection>
             
             <!-- Video stations -->
-            <HubSection Visibility="{Binding DataLoaded, Converter={StaticResource BoolToVis}}"
-                        IsHeaderInteractive="False" 
+            <HubSection IsHeaderInteractive="False" 
                         DataContext="{Binding VideoStations}" 
-                        d:DataContext="{Binding Groups[3], Source={d:DesignData Source=../PVL.Shared/DataModel/SampleData.json, Type=data:SampleDataSource}}"
+                        d:DataContext="{d:DesignData Source=../PVL.Shared/DataModel/SampleStations.json, Type=datamodel:StationGroup}"
                         x:Uid="VideoHeader" 
-                        Header="Video"
+                        Header="{Binding Title}"
                         Padding="40,40,40,32">
                 <DataTemplate>
                     <GridView

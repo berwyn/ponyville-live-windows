@@ -16,8 +16,11 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Common\Converters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\ExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Repeat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataModel\SampleDataSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataModel\StationGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataModel\StationViewModel.cs" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)DataModel\SampleData.json" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\LightGray.png" />
@@ -27,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\RelayCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\SuspensionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\ObservableDictionary.cs" />
+    <Content Include="$(MSBuildThisFileDirectory)DataModel\SampleStations.json" />
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
   </ItemGroup>
 </Project>
